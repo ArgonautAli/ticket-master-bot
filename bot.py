@@ -4,6 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from flask import Flask
 from slackeventsapi import SlackEventAdapter
+import re
 
 env_path = Path(".")/".env"
 load_dotenv(dotenv_path=env_path)
@@ -31,16 +32,18 @@ def reaction_added(event_data):
         limit=1
     )
 
-  message = result["messages"][0]
+  message = result["messages"][-1]
     # Print message text
-  print("messages",message["blocks"])
-  blocks = message["blocks"]
+  print("message", message)
 
-  for block in blocks:
-    for bl in block.get("elements"):
-       print('bl.get("type")',bl)
-       if bl.get("type") == "link":
-          print("bl1", bl)
+  try:
+    if message["attachments"]:
+      blocks = message["attachments"]
+      for block in blocks:
+        print("bl1", block.get("from_url"))
+        re.search("^([a-zA-Z]+:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:)?([0-9]{1,5})?(\/.*)?$",block.get("from_url") )
+  except:
+     print("no attachment") 
 
     
        
